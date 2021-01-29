@@ -21,6 +21,9 @@
 </head>
 
 <body>
+	<div id="container"></div>
+	<img src='' id='output'>
+
 	<script src="https://cdn.jsdelivr.net/npm/socket.io-client@3.1.0/dist/socket.io.min.js"></script>
 
 	<script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r123/examples/js/libs/ammo.wasm.js"></script>
@@ -28,10 +31,12 @@
 	<script src='./gif/gif.js'></script>
 	<script>
 		let res_count = -1;
-		const MAX_NUM_FRAME = 5;
+		const MAX_NUM_FRAME = 30;
 
 		function createGIFobj() {
 			let gif = new GIF({
+				// width: 500,
+				// height: 470,
 				workers: 2,
 				quality: 10,
 				workerScript: './gif/gif.worker.js'
@@ -40,9 +45,14 @@
 			gif.on('finished', function (blob) {
 				console.log("GIF录制完成");
 				let url = URL.createObjectURL(blob);
-				window.open(url);
+				window.open(URL.createObjectURL(blob));
+
 				console.log("blob",blob);
 				console.log("url", url);
+				
+				// 这里是blob
+				document.getElementById('output').src = url;
+				gif_obj.abort()
 			});
 
 			return gif;
@@ -103,9 +113,10 @@
 
 		function init() {
 
-			container = document.createElement('div');
-			document.body.appendChild(container);
-
+			// container = document.createElement('div');
+			// container.id = "container"
+			// document.body.appendChild(container);
+			container = document.querySelector("#container")
 			camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 1, 100);
 			camera.position.set(0, 0, 16);
 
@@ -123,7 +134,8 @@
 
 			renderer = new THREE.WebGLRenderer({ antialias: true });
 			renderer.setPixelRatio(window.devicePixelRatio);
-			renderer.setSize(window.innerWidth, window.innerHeight);
+			renderer.setSize(window.innerWidth/3, window.innerHeight/3);
+			// renderer.setSize('500px', '470px')
 			container.appendChild(renderer.domElement);
 
 			effect = new OutlineEffect(renderer);
@@ -175,14 +187,14 @@
 			window.addEventListener('resize', onWindowResize, false);
 		}
 
-		function onWindowResize() {
+		// function onWindowResize() {
 
-			camera.aspect = window.innerWidth / window.innerHeight;
-			camera.updateProjectionMatrix();
+		// 	camera.aspect = window.innerWidth / window.innerHeight;
+		// 	camera.updateProjectionMatrix();
 
-			effect.setSize(window.innerWidth, window.innerHeight);
+		// 	effect.setSize(window.innerWidth, window.innerHeight);
 
-		}
+		// }
 
 		
 
@@ -191,18 +203,29 @@
 			stats.begin();
 			render(result);
 			res_count += 1
-			// console.log("res_count:",res_count);
-			// console.log("In function animate:", result);
+			console.log(res_count);
 			/*在此处创建gif帧*/
 			let canvas = document.querySelector('canvas');
-			gif_obj.addFrame(canvas, {delay: 200});
+			gif_obj.addFrame(canvas, {copy:true, delay:120});
 
 			if(res_count!=0 && res_count%MAX_NUM_FRAME == 0){
-				gif_obj.render();
-				console.log("帧数达到周期数，render()");
-				console.log("gif_obj", gif_obj);
-				gif_obj.frames.length = 0
-				gif_obj.abort()
+				console.log("达到周期");
+				let cvs = document.createElement('canvas')
+				cvs.width = 333
+				cvs.height = 328
+				let context = cvs.getContext("2d")
+				let img = new Image()
+				img.src = './LOGO.png'
+				img.onload = function(){
+					context.drawImage(this, 0, 0)
+					gif_obj.addFrame(cvs, {copy:true, delay:350});
+					gif_obj.addFrame(cvs, {copy:true, delay:350});
+					gif_obj.addFrame(cvs, {copy:true, delay:350});
+					gif_obj.render();
+					console.log(this);
+					console.log("gif_obj", gif_obj);
+					res_count = 0
+				}
 			}
 			stats.end();
 
