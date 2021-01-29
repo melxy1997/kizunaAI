@@ -24,8 +24,31 @@
 	<script src="https://cdn.jsdelivr.net/npm/socket.io-client@3.1.0/dist/socket.io.min.js"></script>
 
 	<script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r123/examples/js/libs/ammo.wasm.js"></script>
+
+	<script src='./gif/gif.js'></script>
 	<script>
-		let res_count = 0
+		let res_count = -1;
+		const MAX_NUM_FRAME = 5;
+
+		function createGIFobj() {
+			let gif = new GIF({
+				workers: 2,
+				quality: 10,
+				workerScript: './gif/gif.worker.js'
+			});
+
+			gif.on('finished', function (blob) {
+				console.log("GIF录制完成");
+				let url = URL.createObjectURL(blob);
+				console.log("blob",blob);
+				console.log("url", url);
+			});
+
+			return gif;
+		}
+
+		let gif_obj = createGIFobj();
+		
 	</script>
 	<script type="module">
 		
@@ -52,6 +75,8 @@
 		});
 
 		let clock = new THREE.Clock();
+
+		
 
 		Ammo().then(function (AmmoLib) {
 
@@ -157,15 +182,27 @@
 			effect.setSize(window.innerWidth, window.innerHeight);
 
 		}
+
 		
+
 		function animate(result) {
 
 			stats.begin();
 			render(result);
 			res_count += 1
-			console.log("res_count:",res_count);
+			// console.log("res_count:",res_count);
 			// console.log("In function animate:", result);
+			/*在此处创建gif帧*/
+			let canvas = document.querySelector('canvas');
+			gif_obj.addFrame(canvas, {delay: 200});
 
+			if(res_count!=0 && res_count%MAX_NUM_FRAME == 0){
+				gif_obj.render();
+				console.log("帧数达到周期数，render()");
+				console.log("gif_obj", gif_obj);
+
+				// gif_obj = createGIFobj()
+			}
 			stats.end();
 
 		}
@@ -226,8 +263,8 @@
 
 	</script>
 
-<script src='./gif/gif.js'></script>
 <script>
+	/*
     // let isWorking = false;
     const gifRender = function() {
 		console.log("function gifRender");
@@ -243,8 +280,6 @@
 
 	  let canvas = document.querySelector('canvas');
 
-	  gif.addFrame(canvas, {delay: 200});
-	  gif.addFrame(canvas, {delay: 200});
 	  gif.addFrame(canvas, {delay: 200});
 	  gif.render();
 
@@ -272,7 +307,8 @@
     //     }
     //   }
       // Pic.draw(pic, addFrame);
-    }
+	}
+	*/
 </script>
 
 </body>
