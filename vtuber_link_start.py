@@ -3,40 +3,17 @@
 import numpy as np
 import service
 import cv2
+import os,signal
 import sys
 import socketio
 
 from threading import Thread
 from queue import Queue
 
-# file_path = sys.argv[1]
-
-file_path = './face_2.mp4'
-
-cap = cv2.VideoCapture(file_path)
-
-
-print("Path:", file_path)
-
-fd = service.UltraLightFaceDetecion("weights/RFB-320.tflite",
-                                    conf_threshold=0.98)
-fa = service.CoordinateAlignmentModel("weights/coor_2d106.tflite")
-hp = service.HeadPoseEstimator("weights/head_pose_object_points.npy",
-                               cap.get(3), cap.get(4))
-gs = service.IrisLocalizationModel("weights/iris_localization.tflite")
-
-print("Weights loaded.")
-QUEUE_BUFFER_SIZE = 32 #18
-
-
-box_queue = Queue(maxsize=QUEUE_BUFFER_SIZE)
-landmark_queue = Queue(maxsize=QUEUE_BUFFER_SIZE)
-iris_queue = Queue(maxsize=QUEUE_BUFFER_SIZE)
-upstream_queue = Queue(maxsize=QUEUE_BUFFER_SIZE)
-
 # ======================================================
 
 def face_detection():
+    global cap
     while True:
         ret, frame = cap.read()
 
@@ -48,6 +25,7 @@ def face_detection():
 
 
 def face_alignment():
+    global landmark_queue
     while True:
         frame, boxes = box_queue.get()
         landmarks = fa.get_landmarks(frame, boxes)
@@ -55,6 +33,7 @@ def face_alignment():
 
 
 def iris_localization(YAW_THD=45):
+    global landmark_queue
     sio = socketio.Client()
 
     sio.connect("http://127.0.0.1:6789", namespaces='/kizuna')
@@ -94,9 +73,18 @@ def iris_localization(YAW_THD=45):
             result_string = {'euler': (pitch, -yaw, -roll),# 上下 左右 歪头
                              'eye': (theta.mean(), pha.mean()),# 左右 上下
                              'mouth': mouth_open_percent,# 开合程度
-                             'blink': (left_eye_status, right_eye_status)}#睁眼程度
+                             'blink': (left_eye_status, right_eye_status)#睁眼程度
+                             }
             sio.emit('result_data', result_string, namespace='/kizuna')
-            upstream_queue.put((frame, landmarks, euler_angle))
+
+            # upstream_queue.put((frame, landmarks, euler_angle))
+            
+            global num_frame
+            num_frame += 1
+            print(num_frame)
+            if num_frame==MAX_NUM_FRAME: 
+                
+                os.kill(os.getpid(), signal.SIGTERM)
             break
 
 
@@ -119,12 +107,45 @@ def iris_localization(YAW_THD=45):
 # draw_thread = Thread(target=draw)
 # draw_thread.start()
 
-iris_thread = Thread(target=iris_localization)
-iris_thread.start()
+# file_path = sys.argv[1]
+def stopThs():
+    global iris_thread
+    global alignment_thread
+    iris_thread._stop()
+    alignment_thread._stop()
 
-alignment_thread = Thread(target=face_alignment)
-alignment_thread.start()
 
-face_detection()
-cap.release()
-cv2.destroyAllWindows()
+if __name__ == '__main__':
+
+    QUEUE_BUFFER_SIZE = 32 #18
+    MAX_NUM_FRAME = 30
+    num_frame = 0
+
+    box_queue = Queue(maxsize=QUEUE_BUFFER_SIZE)
+    landmark_queue = Queue(maxsize=QUEUE_BUFFER_SIZE)
+    iris_queue = Queue(maxsize=QUEUE_BUFFER_SIZE)
+    upstream_queue = Queue(maxsize=QUEUE_BUFFER_SIZE)
+
+    # file_path = sys.argv[1]
+    file_path = './face_2.mp4'
+
+    cap = cv2.VideoCapture(file_path)
+
+    fd = service.UltraLightFaceDetecion("weights/RFB-320.tflite",
+                                        conf_threshold=0.98)
+    fa = service.CoordinateAlignmentModel("weights/coor_2d106.tflite")
+    hp = service.HeadPoseEstimator("weights/head_pose_object_points.npy",
+                                cap.get(3), cap.get(4))
+    gs = service.IrisLocalizationModel("weights/iris_localization.tflite")
+
+    iris_thread = Thread(target=iris_localization)
+    iris_thread.start()
+
+    alignment_thread = Thread(target=face_alignment)
+    alignment_thread.start()
+
+    face_detection()
+
+    
+    # main()
+    

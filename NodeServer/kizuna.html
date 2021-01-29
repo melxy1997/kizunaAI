@@ -40,6 +40,7 @@
 			gif.on('finished', function (blob) {
 				console.log("GIF录制完成");
 				let url = URL.createObjectURL(blob);
+				window.open(url);
 				console.log("blob",blob);
 				console.log("url", url);
 			});
