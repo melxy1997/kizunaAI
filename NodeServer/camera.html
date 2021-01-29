@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>啦啦啦</h1>
+</body>
+<script>
+    const video = document.createElement('video');
+    //document.body.appendChild(video)
+    const constrains = {
+          video: true,
+          audio: true
+      }
+    navigator.mediaDevices.getUserMedia(constrains)
+      .then(stream => {
+        video.srcObject = stream;
+        video.play();
+      })
+      
+    document.body.appendChild(video)
+
+/*
+    const constrains = {
+        video: true,
+        audio: true
+    }
+    let mediaRecorder
+
+    navigator.mediaDevices.getUserMedia(constrains)
+        .then(stream => {
+            mediaRecorder = new MediaRecorder(stream)
+        })
+
+    function startRecord() {
+        mediaRecorder.start()
+        mediaRecorder.ondataavailable = e => {
+            chunks.push(e.data)
+        }
+    }
+
+    function stopRecord() {
+        mediaRecorder.stop()
+        return new Promise(resolve => {
+            mediaRecorder.onstop = e => {
+                const blob = new Blob(chunks, { type: 'video/ogg; codecs=opus' })
+                const audioURL = window.URL.createObjectURL(blob)
+                resolve(audioURL)
+            }
+        })
+    }
+
+    // video标签用来展示录制下来的内容
+    const video = document.createElement('video');
+
+    // 开始录像
+    startRecord()
+
+    // do something....，比方说这里搞两个button、一个开始录影，一个结束录影
+
+    // 结束录影
+    stopRecord().then(videoUrl => {
+        video.src = videoUrl
+    })
+*/
+</script>
+
+</html>
