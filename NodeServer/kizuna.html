@@ -200,8 +200,8 @@
 				gif_obj.render();
 				console.log("帧数达到周期数，render()");
 				console.log("gif_obj", gif_obj);
-
-				// gif_obj = createGIFobj()
+				gif_obj.frames.length = 0
+				gif_obj.abort()
 			}
 			stats.end();
 
