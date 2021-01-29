@@ -1,5 +1,6 @@
-模型参数放在'./weights'文件夹中
-
-Special Thanks
+请将weights.zip解压至当前文件夹
+## Acknowledgements
+* gif.js https://github.com/jnordberg/gif.js
+## Special Thanks
 * threejs.org: Applying Three.js WebGL Loader to render MMD models on web pages.
 * kizunaai.com: モデルは無料でご利用いただけます.
