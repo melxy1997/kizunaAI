@@ -97,7 +97,7 @@ def main(filename):
             print(*euler_angle)
             hp.draw_axis(frame, euler_angle, face_center)
 
-        cv2.imshow("result", frame)
+        # cv2.imshow("result", frame)
         if cv2.waitKey(0) == ord('q'):
             break
 

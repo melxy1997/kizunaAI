@@ -142,12 +142,12 @@ if __name__ == '__main__':
 
         start_time = time.perf_counter()
         boxes, scores = fd.inference(frame)
-        print(time.perf_counter() - start_time)
+        print("fd.py:", time.perf_counter() - start_time)
 
-        for det in boxes.astype(np.int32):
-            cv2.rectangle(frame, (det[0], det[1]),
-                          (det[2], det[3]), (2, 255, 0), 1)
+        # for det in boxes.astype(np.int32):
+        #     cv2.rectangle(frame, (det[0], det[1]),
+        #                   (det[2], det[3]), (2, 255, 0), 1)
 
-        cv2.imshow("result", frame)
+        # cv2.imshow("result", frame)
         if cv2.waitKey(1) == ord('q'):
             break

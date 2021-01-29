@@ -197,7 +197,7 @@ if __name__ == "__main__":
 
             gs.draw_eye_markers(eye_markers, frame, thickness=1)
 
-        cv2.imshow('res', frame)
+        # cv2.imshow('res', frame)
         # cv2.imwrite(f'./asset/orign_dress/img{counter:0>3}.png', frame)
 
         counter += 1

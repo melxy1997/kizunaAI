@@ -152,12 +152,12 @@ if __name__ == '__main__':
 
         boxes, scores = fd.inference(frame)
 
-        for pred in fa.get_landmarks(frame, boxes):
-            for p in np.round(pred).astype(np.int):
-                cv2.circle(frame, tuple(p), 1, color, 1, cv2.LINE_AA)
+        # for pred in fa.get_landmarks(frame, boxes):
+        #     for p in np.round(pred).astype(np.int):
+        #         cv2.circle(frame, tuple(p), 1, color, 1, cv2.LINE_AA)
 
-        print(time.perf_counter() - start_time)
+        print("fa.py:",time.perf_counter() - start_time)
 
-        cv2.imshow("result", frame)
+        # cv2.imshow("result", frame)
         if cv2.waitKey(0) == ord('q'):
             break

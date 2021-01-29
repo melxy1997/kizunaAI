@@ -17,9 +17,12 @@ function handler(req, res) {
 
 io.of('/kizuna').on('connection', (socket) => {
     console.log('a kizuna client connected');
-
+    let counter = 0
     socket.on('result_data', (result) => {
         if (result != 0) {
+            counter+=1
+            console.log('NodeServer: receive', counter);
+            // if(counter==30){ counter=0 }
             socket.broadcast.emit('result_download', result);
         }
     });

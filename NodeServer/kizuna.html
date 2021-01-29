@@ -24,8 +24,12 @@
 	<script src="https://cdn.jsdelivr.net/npm/socket.io-client@3.1.0/dist/socket.io.min.js"></script>
 
 	<script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r123/examples/js/libs/ammo.wasm.js"></script>
-
+	<script>
+		let res_count = 0
+	</script>
 	<script type="module">
+		
+
 		import * as THREE from 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r123/build/three.module.js';
 
 		import Stats from 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r123/examples/jsm/libs/stats.module.js';
@@ -41,10 +45,9 @@
 
 		let socket = io("http://127.0.0.1:6789/kizuna");
 		let websocketClose = () => socket.close();
-		window.current_data = {}
+
 		socket.on('result_download', (result) => {
-			window.current_data = result
-			console.log("window.current_data",window.current_data);
+			// console.log('Kizuna.html receive:', result);
 			requestAnimationFrame(() => animate(result));
 		});
 
@@ -154,13 +157,14 @@
 			effect.setSize(window.innerWidth, window.innerHeight);
 
 		}
-
+		
 		function animate(result) {
 
 			stats.begin();
 			render(result);
-
-			console.log("In function animate:", result);
+			res_count += 1
+			console.log("res_count:",res_count);
+			// console.log("In function animate:", result);
 
 			stats.end();
 

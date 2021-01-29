@@ -9,11 +9,14 @@ import socketio
 from threading import Thread
 from queue import Queue
 
+# file_path = sys.argv[1]
 
-cap = cv2.VideoCapture(sys.argv[1])
+file_path = './face_2.mp4'
+
+cap = cv2.VideoCapture(file_path)
 
 
-print("Path:",sys.argv[1])
+print("Path:", file_path)
 
 fd = service.UltraLightFaceDetecion("weights/RFB-320.tflite",
                                     conf_threshold=0.98)
@@ -23,7 +26,7 @@ hp = service.HeadPoseEstimator("weights/head_pose_object_points.npy",
 gs = service.IrisLocalizationModel("weights/iris_localization.tflite")
 
 print("Weights loaded.")
-QUEUE_BUFFER_SIZE = 18
+QUEUE_BUFFER_SIZE = 32 #18
 
 
 box_queue = Queue(maxsize=QUEUE_BUFFER_SIZE)
