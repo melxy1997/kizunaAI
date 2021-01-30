@@ -1,3 +1,5 @@
+# 绊爱模拟器
+![architecture](./Arch.png)
 请将weights.zip解压至当前文件夹
 ## Acknowledgements
 * gif.js https://github.com/jnordberg/gif.js
