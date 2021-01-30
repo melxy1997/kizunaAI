@@ -25,7 +25,7 @@
 	<img src='' id='output'>
 
 	<script src="https://cdn.jsdelivr.net/npm/socket.io-client@3.1.0/dist/socket.io.min.js"></script>
-
+	<script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r123/examples/js/libs/ammo.wasm.js"></script>
 
 	<script src='./gif/gif.js'></script>
@@ -43,14 +43,14 @@
 			});
 
 			gif.on('finished', function (blob) {
-				console.log("GIF录制完成");
+				// window.open(URL.createObjectURL(blob));
 				let url = URL.createObjectURL(blob);
-				window.open(URL.createObjectURL(blob));
-
+				let fr = new FileReader()
+				let base64 = fr.readAsDataURL(blob)
 				console.log("blob",blob);
 				console.log("url", url);
-				
-				// 这里是blob
+				console.log("base64", base64);
+
 				document.getElementById('output').src = url;
 				gif_obj.abort()
 			});
@@ -184,7 +184,7 @@
 
 			}, onProgress, null);
 
-			window.addEventListener('resize', onWindowResize, false);
+			// window.addEventListener('resize', onWindowResize, false);
 		}
 
 		// function onWindowResize() {
@@ -209,7 +209,7 @@
 			gif_obj.addFrame(canvas, {copy:true, delay:120});
 
 			if(res_count!=0 && res_count%MAX_NUM_FRAME == 0){
-				console.log("达到周期");
+				// console.log("达到周期");
 				let cvs = document.createElement('canvas')
 				cvs.width = 333
 				cvs.height = 328
@@ -226,6 +226,7 @@
 					console.log("gif_obj", gif_obj);
 					res_count = 0
 				}
+				// $.post('http://localhost:5678/setFlag/',{value:})
 			}
 			stats.end();
 

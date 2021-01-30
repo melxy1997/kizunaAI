@@ -3,6 +3,7 @@
 import numpy as np
 import service
 import cv2
+import requests
 import os,signal
 import sys
 import socketio
@@ -83,7 +84,9 @@ def iris_localization(YAW_THD=45):
             num_frame += 1
             print(num_frame)
             if num_frame==MAX_NUM_FRAME: 
-                
+                url = "http://localhost:5678/setFlag/"
+                data = {'value': 2 }# 2:正在渲染
+                res = requests.get(url, data)
                 os.kill(os.getpid(), signal.SIGTERM)
             break
 
@@ -128,6 +131,11 @@ if __name__ == '__main__':
 
     # file_path = sys.argv[1]
     file_path = './face_2.mp4'
+
+    import requests
+    url = "http://localhost:5678/setFlag/"
+    data = {'value': 1 }# 1:正在推理
+    res = requests.get(url, data)
 
     cap = cv2.VideoCapture(file_path)
 
