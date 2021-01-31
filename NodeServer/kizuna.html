@@ -203,10 +203,9 @@
 			stats.begin();
 			render(result);
 			res_count += 1
-			console.log(res_count);
-			/*在此处创建gif帧*/
+			// console.log(res_count);
 			let canvas = document.querySelector('canvas');
-			gif_obj.addFrame(canvas, {copy:true, delay:120});
+			gif_obj.addFrame(canvas, {copy:true, delay:100});
 
 			if(res_count!=0 && res_count%MAX_NUM_FRAME == 0){
 				// console.log("达到周期");
@@ -219,6 +218,7 @@
 				img.onload = function(){
 					context.drawImage(this, 0, 0)
 					gif_obj.addFrame(cvs, {copy:true, delay:350});
+					/*在此处创建LOGO帧*/
 					gif_obj.addFrame(cvs, {copy:true, delay:350});
 					gif_obj.addFrame(cvs, {copy:true, delay:350});
 					gif_obj.render();
