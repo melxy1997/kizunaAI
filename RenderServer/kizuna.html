@@ -30,6 +30,7 @@
 
 	<script src='./gif/gif.js'></script>
 	<script>
+		let global_blob;
 		let res_count = -1;
 		const MAX_NUM_FRAME = 30;
 
@@ -45,11 +46,28 @@
 			gif.on('finished', function (blob) {
 				// window.open(URL.createObjectURL(blob));
 				let url = URL.createObjectURL(blob);
-				let fr = new FileReader()
-				let base64 = fr.readAsDataURL(blob)
-				console.log("blob",blob);
-				console.log("url", url);
-				console.log("base64", base64);
+				// let fr = new FileReader()//无法得到base64
+				// let base64 = fr.readAsDataURL(blob)
+				global_blob = blob
+				console.log("blob对象", blob);
+				console.log("url内容", url);
+				// console.log("base64", base64);
+				
+				// $.post('http://localhost:5678/saveBlob/',{data:base64})
+				
+				
+				let fd = new FormData();
+				fd.append('fname', 'test.gif');
+				fd.append('data', blob);
+				$.ajax({
+					type: 'POST',
+					url: 'http://localhost:5678/saveBlob/',
+					data: fd,
+					processData: false,
+					contentType: false
+				}).done(function (data) {
+					console.log(data);
+				});
 
 				document.getElementById('output').src = url;
 				gif_obj.abort()
@@ -59,10 +77,10 @@
 		}
 
 		let gif_obj = createGIFobj();
-		
+
 	</script>
 	<script type="module">
-		
+
 
 		import * as THREE from 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r123/build/three.module.js';
 
@@ -87,7 +105,7 @@
 
 		let clock = new THREE.Clock();
 
-		
+
 
 		Ammo().then(function (AmmoLib) {
 
@@ -134,7 +152,7 @@
 
 			renderer = new THREE.WebGLRenderer({ antialias: true });
 			renderer.setPixelRatio(window.devicePixelRatio);
-			renderer.setSize(window.innerWidth/3, window.innerHeight/3);
+			renderer.setSize(window.innerWidth / 3, window.innerHeight / 3);
 			// renderer.setSize('500px', '470px')
 			container.appendChild(renderer.domElement);
 
@@ -196,7 +214,7 @@
 
 		// }
 
-		
+
 
 		function animate(result) {
 
@@ -205,9 +223,9 @@
 			res_count += 1
 			// console.log(res_count);
 			let canvas = document.querySelector('canvas');
-			gif_obj.addFrame(canvas, {copy:true, delay:100});
+			gif_obj.addFrame(canvas, { copy: true, delay: 100 });
 
-			if(res_count!=0 && res_count%MAX_NUM_FRAME == 0){
+			if (res_count != 0 && res_count % MAX_NUM_FRAME == 0) {
 				// console.log("达到周期");
 				let cvs = document.createElement('canvas')
 				cvs.width = 333
@@ -215,12 +233,12 @@
 				let context = cvs.getContext("2d")
 				let img = new Image()
 				img.src = './LOGO.png'
-				img.onload = function(){
+				img.onload = function () {
 					context.drawImage(this, 0, 0)
 					/*delay不生效，只能添三次了*/
-					gif_obj.addFrame(cvs, {copy:true, delay:350});
-					gif_obj.addFrame(cvs, {copy:true, delay:350});
-					gif_obj.addFrame(cvs, {copy:true, delay:350});
+					gif_obj.addFrame(cvs, { copy: true, delay: 350 });
+					gif_obj.addFrame(cvs, { copy: true, delay: 350 });
+					gif_obj.addFrame(cvs, { copy: true, delay: 350 });
 					gif_obj.render();
 					console.log(this);
 					console.log("gif_obj", gif_obj);
@@ -288,55 +306,55 @@
 
 	</script>
 
-<script>
-	
-    // let isWorking = false;
-    const gifRender = function() {
-		console.log("function gifRender");
-    //   if (isWorking) return;
-    //   isWorking = true;
-      let gif = new GIF({
-        workers: 2,
-        quality: 10,
-        workerScript: './gif/gif.worker.js'
-	  });
+	<script>
 
-	  console.log("GIF_obj", gif);
+		// let isWorking = false;
+		const gifRender = function () {
+			console.log("function gifRender");
+			//   if (isWorking) return;
+			//   isWorking = true;
+			let gif = new GIF({
+				workers: 2,
+				quality: 10,
+				workerScript: './gif/gif.worker.js'
+			});
 
-	  let canvas = document.querySelector('canvas');
+			console.log("GIF_obj", gif);
 
-	  gif.addFrame(canvas, {delay: 200});
-	  gif.render();
+			let canvas = document.querySelector('canvas');
 
-      gif.on('finished', function (blob) {
-		// isWorking = false;
-		
-		let url = URL.createObjectURL(blob);
-		
-		$.post('http://localhost:5678/saveBlob/',{value:blob})
+			gif.addFrame(canvas, { delay: 200 });
+			gif.render();
 
-        console.log("blob对象",blob);
-		console.log("url内容", url);
-		
-      });
+			gif.on('finished', function (blob) {
+				// isWorking = false;
 
-      // let pic = new Pic(200, 200, 20, 10);
-      // let renderFinished = false;
-    //   function addFrame(canvas) {
-    //     if (renderFinished) return;
+				let url = URL.createObjectURL(blob);
+				$.get('http://localhost:5678/setFlag/', { value: 2 })
+				$.post('http://localhost:5678/saveBlob/', { value: blob })
 
-    //     if (gif.frames.length < 50) {
-    //       gif.addFrame(canvas, {delay: 20});
-    //     } else {
-    //       gif.render();
-    //       renderFinished = true
-    //       addFrame = null
-    //     }
-    //   }
-      // Pic.draw(pic, addFrame);
-	}
-	*/
-</script>
+				console.log("blob对象", blob);
+				console.log("url内容", url);
+
+			});
+
+			// let pic = new Pic(200, 200, 20, 10);
+			// let renderFinished = false;
+			//   function addFrame(canvas) {
+			//     if (renderFinished) return;
+
+			//     if (gif.frames.length < 50) {
+			//       gif.addFrame(canvas, {delay: 20});
+			//     } else {
+			//       gif.render();
+			//       renderFinished = true
+			//       addFrame = null
+			//     }
+			//   }
+			// Pic.draw(pic, addFrame);
+		}
+			
+	</script>
 
 </body>
 

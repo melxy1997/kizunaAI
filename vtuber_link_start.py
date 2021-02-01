@@ -129,8 +129,8 @@ if __name__ == '__main__':
     iris_queue = Queue(maxsize=QUEUE_BUFFER_SIZE)
     upstream_queue = Queue(maxsize=QUEUE_BUFFER_SIZE)
 
-    # file_path = sys.argv[1]
-    file_path = './face_2.mp4'
+    file_path = sys.argv[1]
+    # file_path = './face_2.mp4'
 
     import requests
     url = "http://localhost:5678/setFlag/"
