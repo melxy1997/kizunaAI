@@ -217,8 +217,8 @@
 				img.src = './LOGO.png'
 				img.onload = function(){
 					context.drawImage(this, 0, 0)
+					/*delay不生效，只能添三次了*/
 					gif_obj.addFrame(cvs, {copy:true, delay:350});
-					/*在此处创建LOGO帧*/
 					gif_obj.addFrame(cvs, {copy:true, delay:350});
 					gif_obj.addFrame(cvs, {copy:true, delay:350});
 					gif_obj.render();
@@ -289,7 +289,7 @@
 	</script>
 
 <script>
-	/*
+	
     // let isWorking = false;
     const gifRender = function() {
 		console.log("function gifRender");
@@ -311,10 +311,12 @@
       gif.on('finished', function (blob) {
 		// isWorking = false;
 		
-        let url = URL.createObjectURL(blob);
+		let url = URL.createObjectURL(blob);
+		
+		$.post('http://localhost:5678/saveBlob/',{value:blob})
 
-        console.log("blob",blob);
-		console.log("url", url);
+        console.log("blob对象",blob);
+		console.log("url内容", url);
 		
       });
 

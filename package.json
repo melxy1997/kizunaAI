@@ -2,5 +2,9 @@
   "devDependencies": {
     "express": "^4.17.1",
     "socket.io": "^3.1.0"
+  },
+  "scripts": {
+    "dev": "babel src -d lib",
+    "start": "node PlaceHolderServer.js"
   }
 }
